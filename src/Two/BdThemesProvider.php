@@ -28,7 +28,7 @@ class BdThemesProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getAuthUrl($state)
     {
-        return $this->buildAuthUrlFromBase('https://account.bdthemes.test/oauth/authorize', $state);
+        return $this->buildAuthUrlFromBase('https://account.bdthemes.com/oauth/authorize', $state);
     }
 
     /**
@@ -36,7 +36,7 @@ class BdThemesProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenUrl()
     {
-        return 'https://account.bdthemes.test/oauth/token';
+        return 'https://account.bdthemes.com/oauth/token';
     }
 
     /**
@@ -44,7 +44,7 @@ class BdThemesProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getUserByToken($token)
     {
-        $response = $this->getHttpClient()->get('https://account.bdthemes.test/api/user', [
+        $response = $this->getHttpClient()->get('https://account.bdthemes.com/api/user', [
             RequestOptions::QUERY => [
                 'prettyPrint' => 'false',
             ],

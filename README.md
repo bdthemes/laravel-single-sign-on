@@ -17,5 +17,5 @@ In the services config
     'client_id'         => env('BDTHEMES_CLIENT_ID'),
     'client_secret'     => env('BDTHEMES_CLIENT_SECRET'),
     'redirect'          => env('BDTHEMES_REDIRECT_URI'),
-    'api_url'           => env('BDTHEMES_SSO_API_URL', 'https://account.bdthemes.com'),
+    'api_url'           => env('BDTHEMES_SSO_API_URL'), //optional
 ],

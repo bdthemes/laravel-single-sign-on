@@ -47,7 +47,7 @@ class SingleSignOnServiceProvider extends ServiceProvider implements DeferrableP
             $this->publishes([
                 __DIR__.'/../database/migrations/add_bdthemes_account_id_field_to_users_table.php.stub' => $this->getMigrationFileName('add_bdthemes_account_id_field_to_users.php'),
             ], 'migrations');
-            
+
         }
     }
 

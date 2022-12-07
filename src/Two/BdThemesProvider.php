@@ -4,6 +4,7 @@ namespace BdThemes\SingleSignOn\Two;
 
 use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class BdThemesProvider extends AbstractProvider implements ProviderInterface
 {
@@ -24,8 +25,20 @@ class BdThemesProvider extends AbstractProvider implements ProviderInterface
     ];
 
 
-    protected function getApiUrl(){
-        return config('bdthemes-sso.api_url');
+    protected function getApiUrl($endPoint)
+    {
+        if (!$apiBaseUrl = config('services.bdthemes.api_url')) {
+            $apiBaseUrl = "https://account.bdthemes.com";
+        }
+
+        $apiBaseUrl = Str::of($apiBaseUrl)->rtrim('/')->toString();
+
+        if (!$endPoint) {
+            return $apiBaseUrl;
+        }
+        $endPoint = Str::of($endPoint)->start('/')->toString();
+
+        return "{$apiBaseUrl}{$endPoint}";
     }
 
     /**
@@ -33,7 +46,7 @@ class BdThemesProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getAuthUrl($state)
     {
-        return $this->buildAuthUrlFromBase('https://account.bdthemes.com/oauth/authorize', $state);
+        return $this->buildAuthUrlFromBase($this->getApiUrl('/oauth/authorize'), $state);
     }
 
     /**
@@ -41,7 +54,7 @@ class BdThemesProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenUrl()
     {
-        return 'https://account.bdthemes.com/oauth/token';
+        return $this->getApiUrl('/oauth/token');
     }
 
     /**
@@ -49,7 +62,7 @@ class BdThemesProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getUserByToken($token)
     {
-        $response = $this->getHttpClient()->get('https://account.bdthemes.com/api/user', [
+        $response = $this->getHttpClient()->get($this->getApiUrl('/api/user'), [
             RequestOptions::QUERY => [
                 'prettyPrint' => 'false',
             ],

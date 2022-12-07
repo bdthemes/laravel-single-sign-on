@@ -3,6 +3,8 @@
 namespace BdThemes\SingleSignOn;
 
 use Illuminate\Contracts\Support\DeferrableProvider;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 use BdThemes\SingleSignOn\Contracts\Factory;
 
@@ -15,10 +17,6 @@ class SingleSignOnServiceProvider extends ServiceProvider implements DeferrableP
      */
     public function register()
     {
-        $this->mergeConfigFrom(
-              __DIR__.'/../config/bdthemes-sso.php', 'bdthemes-sso'
-        );
-
         $this->app->singleton(Factory::class, function ($app) {
             return new SingleSignOnManager($app);
         });
@@ -46,15 +44,29 @@ class SingleSignOnServiceProvider extends ServiceProvider implements DeferrableP
     protected function bootPublishing(){
         if ( $this->app->runningInConsole() ) {
 
-            $this->publishes( [
-                __DIR__
-                . '/../config/bdthemes-sso.php' => $this->app->configPath( 'bdthemes-sso.php' ),
-            ], 'bdthemes-sso' );
-
             $this->publishes([
-                __DIR__.'/../database/migrations' => database_path('migrations'),
-            ], 'bdthemes-sso-migrations');
-
+                __DIR__.'/../database/migrations/add_bdthemes_account_id_field_to_users_table.php.stub' => $this->getMigrationFileName('add_bdthemes_account_id_field_to_users.php'),
+            ], 'migrations');
+            
         }
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @return string
+     */
+    protected function getMigrationFileName($migrationFileName): string
+    {
+        $timestamp = date('Y_m_d_His');
+
+        $filesystem = $this->app->make(Filesystem::class);
+
+        return Collection::make($this->app->databasePath().DIRECTORY_SEPARATOR.'migrations'.DIRECTORY_SEPARATOR)
+            ->flatMap(function ($path) use ($filesystem, $migrationFileName) {
+                return $filesystem->glob($path.'*_'.$migrationFileName);
+            })
+            ->push($this->app->databasePath()."/migrations/{$timestamp}_{$migrationFileName}")
+            ->first();
     }
 }

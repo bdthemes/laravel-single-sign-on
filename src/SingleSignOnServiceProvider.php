@@ -15,6 +15,10 @@ class SingleSignOnServiceProvider extends ServiceProvider implements DeferrableP
      */
     public function register()
     {
+        $this->mergeConfigFrom(
+              __DIR__.'/../config/bdthemes-sso.php', 'bdthemes-sso'
+        );
+
         $this->app->singleton(Factory::class, function ($app) {
             return new SingleSignOnManager($app);
         });
@@ -28,5 +32,29 @@ class SingleSignOnServiceProvider extends ServiceProvider implements DeferrableP
     public function provides()
     {
         return [Factory::class];
+    }
+
+    /**
+     * Bootstrap any package services.
+     *
+     * @return void
+     */
+    public function boot() {
+        $this->bootPublishing();
+    }
+
+    protected function bootPublishing(){
+        if ( $this->app->runningInConsole() ) {
+
+            $this->publishes( [
+                __DIR__
+                . '/../config/bdthemes-sso.php' => $this->app->configPath( 'bdthemes-sso.php' ),
+            ], 'bdthemes-sso' );
+
+            $this->publishes([
+                __DIR__.'/../database/migrations' => database_path('migrations'),
+            ], 'bdthemes-sso-migrations');
+
+        }
     }
 }

@@ -23,6 +23,11 @@ class BdThemesProvider extends AbstractProvider implements ProviderInterface
         'basic-profile',
     ];
 
+
+    protected function getApiUrl(){
+        return config('bdthemes-sso.api_url');
+    }
+
     /**
      * {@inheritdoc}
      */
